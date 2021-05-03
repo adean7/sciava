@@ -130,3 +130,5 @@ class Atom:
 
     def __str__(self):
         return '{:>4}  {:>9.5f}  {:>9.5f}  {:>9.5f}'.format(self.element, self.x, self.y, self.z)
+
+

@@ -1,6 +1,8 @@
 from sciava.parameters import Parameters
 from sciava.system import System
 
+from sciava.qm import run as qmRun
+
 
 class Model:
     """ Contains all the information for the calculation.
@@ -22,6 +24,17 @@ class Model:
 
     def removeSystem(self, cell):
         self.system.remove(cell, currentParams=self.params)
+
+    def run(self):
+        self.params.startTimer()
+
+        if self.params.task == 'SINGLEPOINT':
+            qmRun(self)
+
+        self.params.stopTimer()
+
+        print('\nTime of run: {:>9.3f} s.'.format(self.params.getRunTime()))
+
 
     def __repr__(self):
         return str(self)

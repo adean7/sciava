@@ -1,12 +1,23 @@
+from time import time
 
-knownParameters = ['TASK', 'TASKMETHOD']
+knownParameters = ['TASK', 'TASKMETHOD',
+                   'THEORY',
+                   'ATOMICSOLVER']
 
-parameterValues = { 'TASK'       : ['SP', 'SINGLEPOINT'],
-                    'TASKMETHOD' : ['ATOMISTIC', 'HF', 'HARTREE-FOCK', 'HARTREEFOCK', 'HARTREE_FOCK']
+parameterValues = { 'TASK'         : ['SP', 'SINGLEPOINT'],
+                    'TASKMETHOD'   : ['ATOMISTIC', 'HF', 'HARTREE-FOCK', 'HARTREEFOCK', 'HARTREE_FOCK'],
+
+                    'THEORY'       : ['LDA', 'PBE', 'BLYP'],
+
+                    'ATOMICSOLVER' : ['SH', 'SCHRODINGER', 'SCHROEDINGER', 'SCHRO', 'SCHROE', 'SCHROD', 'SCHROED']
                     }
 
-parameterDefaults = { 'TASK'       : 'SINGLEPOINT',
-                      'TASKMETHOD' : 'HARTREE-FOCK'
+parameterDefaults = { 'TASK'         : 'SINGLEPOINT',
+                      'TASKMETHOD'   : 'HARTREE-FOCK',
+
+                      'THEORY'       : 'LDA',
+
+                      'ATOMICSOLVER' : 'SH'
                       }
 
 class Parameters:
@@ -14,11 +25,18 @@ class Parameters:
         self.task       = None
         self.taskMethod = None
 
+        self.theory = None
+
+        self.atomicSolver = None
+
         # Record what parameters have been specified by the user so they are not updated when deciding default values.
         self.userSpecified = []
 
         self.update(currentSystem, **kwargs)
         self.check()
+
+        self.startTime = None
+        self.stopTime  = None
 
     def update(self, currentSystem=None, **kwargs):
         """ This function updates n parameters with associated values. """
@@ -47,6 +65,20 @@ class Parameters:
                 elif val in ['HF', 'HARTREE-FOCK', 'HARTREEFOCK', 'HARTREE_FOCK']:
                     self.taskMethod = 'HARTREE-FOCK'
 
+            elif param == 'THEORY':
+                self.userSpecified.append('THEORY')
+                if val == 'LDA':
+                    self.theory = 'LDA'
+                elif val == 'PBE':
+                    self.theory = 'PBE'
+                elif val == 'BLYP':
+                    self.theory = 'BLYP'
+
+            elif param == 'ATOMICSOLVER':
+                self.userSpecified.append('ATOMICSOLVER')
+                if val in ['SH', 'SCHRODINGER', 'SCHROEDINGER', 'SCHRO', 'SCHROE', 'SCHROD', 'SCHROED']:
+                    self.atomicSolver = 'SH'
+
         # Get defaults of system first.
         if currentSystem is not None:
             currentSystem.getDefaults(self)
@@ -73,6 +105,16 @@ class Parameters:
             if 'TASKMETHOD' in self.userSpecified:
                 self.userSpecified.remove('TASKMETHOD')
 
+        elif param == 'THEORY':
+            self.theory = None
+            if 'THEORY' in self.userSpecified:
+                self.userSpecified.remove('THEORY')
+
+        elif param == 'ATOMICSOLVER':
+            self.atomicSolver = None
+            if 'ATOMICSOLVER' in self.userSpecified:
+                self.userSpecified.remove('ATOMICSOLVER')
+
         # Get defaults of system first.
         if currentSystem is not None:
             currentSystem.getDefaults(self)
@@ -85,8 +127,8 @@ class Parameters:
         if self.task is None:
             self.task = parameterDefaults.get('TASK')
 
-        # Task method.
         if self.task == 'SINGLEPOINT':
+            # Task method only relavent for a singlepoint calculation.
             if self.taskMethod is None:
                 if currentSystem is not None and currentSystem.numAtoms == 1:
                     self.taskMethod = 'ATOMISTIC'
@@ -97,6 +139,16 @@ class Parameters:
                     self.taskMethod = 'ATOMISTIC'
                 else:
                     self.taskMethod = parameterDefaults.get('TASKMETHOD')
+
+            # Theory only relavent for a singlepoint calculation where we are using the atomistic method.
+            if self.theory is None:
+                if self.taskMethod == 'ATOMISTIC':
+                    self.theory = parameterDefaults.get('THEORY')
+
+            # Atomic solver only relavent for a singlepoint calculation where we are using the atomistic method.
+            if self.atomicSolver is None:
+                if self.taskMethod == 'ATOMISTIC':
+                    self.atomicSolver = parameterDefaults.get('ATOMICSOLVER')
 
     def check(self):
         """ This function checks that the current parameters of the system are logical and the model will run. """
@@ -111,3 +163,12 @@ class Parameters:
             dct['Task method'] = self.taskMethod[0].upper() + self.taskMethod[1:].lower()
 
         return dct
+
+    def startTimer(self):
+        self.startTime = time()
+
+    def stopTimer(self):
+        self.stopTime = time()
+
+    def getRunTime(self):
+        return self.stopTime - self.startTime
