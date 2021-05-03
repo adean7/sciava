@@ -1,4 +1,4 @@
-import numba
+from numba import njit
 
 
 def number_of_nodes(func, nmin, nmax):
@@ -9,7 +9,7 @@ def number_of_nodes(func, nmin, nmax):
 
     return number_of_nodes_calc(func, nmin, nmax)
 
-@numba.njit()
+@njit()
 def number_of_nodes_calc(func, nmin, nmax):
     num_nodes = 0
 

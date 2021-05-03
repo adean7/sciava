@@ -1,4 +1,4 @@
-import numba
+from numba import njit
 
 
 def sod_solve(zz, yy, nmin, nmax, h=None):
@@ -30,7 +30,7 @@ def sod_solve(zz, yy, nmin, nmax, h=None):
     else:
         sod_solve_int(zz, yy, nmin, nmax, isgn, ycur, yold, d2y)
 
-@numba.njit()
+@njit()
 def sod_solve_der_h(zz, yy, nmin, isgn, h):
     i = nmin - isgn - 1
     d2y = zz[i] * yy[i] + h[i]
@@ -39,7 +39,7 @@ def sod_solve_der_h(zz, yy, nmin, isgn, h):
     yold = yy[i] - (zz[i] * yy[i] + h[i]) / 12.0
     return ycur, yold, d2y
 
-@numba.njit()
+@njit()
 def sod_solve_der(zz, yy, nmin, isgn):
     i = nmin - isgn - 1
     d2y = zz[i] * yy[i]
@@ -48,7 +48,7 @@ def sod_solve_der(zz, yy, nmin, isgn):
     yold = (1.0 - zz[i] / 12.0) * yy[i]
     return ycur, yold, d2y
 
-@numba.njit()
+@njit()
 def sod_solve_int_h(zz, yy, nmin, nmax, isgn, h, ycur, yold, d2y):
     for i in range(nmin - isgn, nmax + isgn, isgn):
         ynew = 2.0 * ycur - yold + d2y
@@ -57,7 +57,7 @@ def sod_solve_int_h(zz, yy, nmin, nmax, isgn, h, ycur, yold, d2y):
         yold = ycur
         ycur = ynew
 
-@numba.njit()
+@njit()
 def sod_solve_int(zz, yy, nmin, nmax, isgn, ycur, yold, d2y):
     for i in range(nmin - isgn, nmax + isgn, isgn):
         ynew = 2.0 * ycur - yold + d2y

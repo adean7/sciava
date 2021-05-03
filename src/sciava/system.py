@@ -96,9 +96,10 @@ class System:
             dct['Atoms']        = ', '.join([e.element for e in self.atoms])
             dct['Num of atoms'] = self.numAtoms
 
-        elif currentParams.task == 'SINGLEPOINT':
-            dct['Atoms']        = ', '.join([e.element for e in self.atoms])
-            dct['Num of atoms'] = self.numAtoms
+        elif currentParams.task == 'SP':
+            if self.numAtoms > 0:
+                dct['Atoms']        = ', '.join([e.element for e in self.atoms])
+                dct['Num of atoms'] = self.numAtoms
 
         return dct
 

@@ -28,7 +28,7 @@ class Model:
     def run(self):
         self.params.startTimer()
 
-        if self.params.task == 'SINGLEPOINT':
+        if self.params.task == 'SP':
             qmRun(self)
 
         self.params.stopTimer()
