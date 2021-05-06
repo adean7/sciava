@@ -25,6 +25,10 @@ class Model:
     def removeSystem(self, cell):
         self.system.remove(cell, currentParams=self.params)
 
+    def check(self):
+        """ This function checks that the current model is logical and will run. """
+        raise NotImplementedError('Not implemented global model check.')
+
     def run(self):
         self.params.startTimer()
 

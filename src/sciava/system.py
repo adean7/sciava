@@ -3,14 +3,240 @@ import numpy as np
 from sciava.data import *
 
 
-knownCells = ['ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE', 'ATOM_COORD', 'ATOMIC_COORD',
-              'ATOM_COORDINATE', 'ATOMIC_COORDINATE', 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
-              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES']
+def checkAtom(atom):
+    return True if (type(atom) is Atom or (type(atom) is list and len(atom) == 4)) else False
 
-cellValues = { }
+def getAtom(atom):
+    return Atom(atom[0], atom[1], atom[2], atom[3]) if type(atom) is list else atom
 
-cellDefaults = { 'NUMATOMS'   : 0
-                 }
+def defaultAtom():
+    return None
+
+def niceAtom(atom):
+    return str(atom)
+
+
+def checkAtoms(atoms):
+    for atom in atoms:
+        if not checkAtom(atom):
+            return False
+    return True
+
+def getAtoms(atoms):
+    return [Atom(atom[0], atom[1], atom[2], atom[3]) if type(atom) is list else atom for atom in atoms]
+
+def defaultAtoms():
+    return list()
+
+def niceAtoms(atoms):
+    return ', '.join([atom.element for atom in atoms])
+
+
+def checkNumAtoms(numAtoms):
+    return True if type(numAtoms) is int and numAtoms >= 0 else False
+
+def getNumAtoms(numAtoms):
+    return numAtoms
+
+def defaultNumAtoms():
+    return int(0)
+
+def niceNumAtoms(numAtoms):
+    return '{:<3d}'.format(numAtoms)
+
+
+
+
+
+''' This is just the basic list of cells. '''
+cellsKnown = ['ATOM', 'ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE',
+              'ATOM_COORD', 'ATOMIC_COORD', 'ATOM_COORDINATE', 'ATOMIC_COORDINATE',
+
+              'ATOMS', 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
+              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES',
+
+              'NUMATOMS', 'NUMBERATOMS', 'NUMOFATOMS', 'NUMBEROFATOMS',
+              'NUM_ATOMS', 'NUMBER_ATOMS', 'NUM_OF_ATOMS', 'NUMBER_OF_ATOMS'
+              ]
+
+''' This dictionary takes many cells and gives the version which is used in the code. '''
+cellsManyToOne = { 'ATOM'               : 'ATOM',
+                   'ATOMCOORD'          : 'ATOM',
+                   'ATOMICCOORD'        : 'ATOM',
+                   'ATOMCOORDINATE'     : 'ATOM',
+                   'ATOMICCOORDINATE'   : 'ATOM',
+                   'ATOM_COORD'         : 'ATOM',
+                   'ATOMIC_COORD'       : 'ATOM',
+                   'ATOM_COORDINATE'    : 'ATOM',
+                   'ATOMIC_COORDINATE'  : 'ATOM',
+
+                   'ATOMS'              : 'ATOMS',
+                   'ATOMCOORDS'         : 'ATOMS',
+                   'ATOMICCOORDS'       : 'ATOMS',
+                   'ATOMCOORDINATES'    : 'ATOMS',
+                   'ATOMICCOORDINATES'  : 'ATOMS',
+                   'ATOM_COORDS'        : 'ATOMS',
+                   'ATOMIC_COORDS'      : 'ATOMS',
+                   'ATOM_COORDINATES'   : 'ATOMS',
+                   'ATOMIC_COORDINATES' : 'ATOMS',
+
+                   'NUMATOMS'        : 'NUMATOMS',
+                   'NUMBERATOMS'     : 'NUMATOMS',
+                   'NUMOFATOMS'      : 'NUMATOMS',
+                   'NUMBEROFATOMS'   : 'NUMATOMS',
+                   'NUM_ATOMS'       : 'NUMATOMS',
+                   'NUMBER_ATOMS'    : 'NUMATOMS',
+                   'NUM_OF_ATOMS'    : 'NUMATOMS',
+                   'NUMBER_OF_ATOMS' : 'NUMATOMS'
+                   }
+
+''' This dictionary holds the functions that check the value of the passed cell. '''
+cellCheckValueFuncs = { 'ATOM'     : checkAtom,
+                        'ATOMS'    : checkAtoms,
+                        'NUMATOMS' : checkNumAtoms
+                        }
+
+''' This dictionary holds the functions that get the value of the passed cell. '''
+cellGetValueFuncs = { 'ATOM'     : getAtom,
+                      'ATOMS'    : getAtoms,
+                      'NUMATOMS' : getNumAtoms
+                      }
+
+''' This dictionary holds the functions that get the default values for cells. '''
+cellGetDefaultFuncs = { 'ATOM'     : defaultAtom,
+                        'ATOMS'    : defaultAtoms,
+                        'NUMATOMS' : defaultNumAtoms
+                        }
+
+''' This dictionary holds the nice presentable names for printing cells to screen. '''
+cellsNiceNames = { 'ATOM'     : 'Atom',
+                   'ATOMS'    : 'Atoms',
+                   'NUMATOMS' : 'Num. atoms'
+                   }
+
+'''
+'''''' This dictionary takes many cell values and gives the version which is used in the code. ''''''
+valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
+                               'SINGLEPOINT' : 'SP'
+                               }
+                    }
+'''
+
+''' This dictionary holds the functions that give the nice presentable forms for printing cell values to screen. '''
+valuesNice = { 'ATOM'     : niceAtom,
+               'ATOMS'    : niceAtoms,
+               'NUMATOMS' : niceNumAtoms,
+               }
+
+
+
+
+
+
+
+
+
+
+def cellAllowed(cell):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+
+    c = cell.upper()
+
+    return True if c in cellsKnown else False
+
+def valueAllowed(cell, value):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+
+    c = cell.upper()
+    val = value.upper() if type(value) is str else value
+
+    if not cellAllowed(c):
+        return False
+
+    funcToCheckVal = cellCheckValueFuncs.get(c)
+
+    return funcToCheckVal(val)
+
+def getShortCell(cell):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+
+    c = cell.upper()
+
+    assert cellAllowed(c), '{} parameter not known.'.format(cell)
+
+    return cellsManyToOne.get(c)
+
+def getShortValue(cell, value):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+    assert value is not None, '{} cell value must be specified.'.format(cell)
+
+    c = cell.upper()
+    val = value.upper() if type(value) is str else value
+
+    assert cellAllowed(c), '{} cell not known.'.format(cell)
+    assert valueAllowed(c, val), '{} not an acceptable value for {}'.format(value, cell)
+
+    funcToGetVal = cellGetValueFuncs.get(c)
+
+    return funcToGetVal(val)
+
+def getDefaultCellValue(cell):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+
+    c = cell.upper()
+
+    assert cellAllowed(c), '{} cell not known.'.format(cell)
+
+    funcToGetDefault = cellGetDefaultFuncs.get(c)
+
+    return funcToGetDefault()
+
+def getNiceCellName(cell):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+
+    c = cell.upper()
+
+    assert cellAllowed(c), '{} cell not known.'.format(cell)
+
+    return cellsNiceNames.get(c)
+
+def getNiceValue(cell, value):
+    assert type(cell) is str, '{} cell must be specified by a string.'.format(cell)
+    assert value is not None, '{} cell value must be specified.'.format(cell)
+
+    c = cell.upper()
+    val = value.upper() if type(value) is str else value
+
+    assert cellAllowed(c), '{} cell not known.'.format(cell)
+    assert valueAllowed(c, val), '{} not an acceptable value for {}'.format(value, cell)
+
+    funcToGetNiceNames = valuesNice.get(c)
+
+    return funcToGetNiceNames(val)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class System:
     def __init__(self, currentParams=None, **kwargs):
@@ -21,35 +247,39 @@ class System:
         self.userSpecified = []
 
         self.update(currentParams, **kwargs)
-        self.check()
 
     def update(self, currentParams=None, **kwargs):
         """ This function updates n things about the system with associated values. """
 
         for cell, value in kwargs.items():
-            c = cell.upper()
-            assert c in knownCells, '{} cell not known.'.format(cell)
-
             if value is None:
+                self.remove(cell, currentParams)
+                continue
+
+            c = getShortCell(cell)
+            val = getShortValue(c, value)
+
+            self.userSpecified.append(c)
+
+            if c == getShortCell('ATOM'):
+                self.atoms.append(val)
+                self.numAtoms = len(self.atoms)
+
+                # Because ATOM and ATOMS correspond to the same list (self.atoms) but are treated separately:
+                #    let's just sort out the self.userSpecified manually to be sure we have no issues
                 if c in self.userSpecified:
                     self.userSpecified.remove(c)
+                self.userSpecified.append(getShortCell('ATOMS'))
 
-            # We do value checking manually in system as there are so many possibilities.
-
-            if c in ['ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE', 'ATOM_COORD', 'ATOMIC_COORD',
-              'ATOM_COORDINATE', 'ATOMIC_COORDINATE' 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
-              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES']:
-                assert type(value) in [Atom, list], '{} value not acceptable for {}'.format(value, cell)
-
-                if type(value) is list:
-                    assert len(value) == 4, 'List entry of atomic coordinate must be [element, x, y, z] format.'
-                    atom = Atom(value[0], value[1], value[2], value[3])
-                else:
-                    atom = value
-
-                self.atoms.append(atom)
+            elif c == getShortCell('ATOMS'):
+                self.atoms += val
                 self.numAtoms = len(self.atoms)
-                self.userSpecified.append('ATOMS')
+
+                # Because ATOM and ATOMS correspond to the same list (self.atoms) but are treated separately:
+                #    let's just sort out the self.userSpecified manually to be sure we have no issues
+                if c in self.userSpecified:
+                    self.userSpecified.remove(c)
+                self.userSpecified.append(getShortCell('ATOMS'))
 
         # Get defaults of system first.
         self.getDefaults(currentParams)
@@ -59,21 +289,18 @@ class System:
     def remove(self, cell=None, currentParams=None):
         """ This function removes a single cell from the configuration. """
 
-        if cell is None:
-            raise ValueError('Need to supply cell to remove.')
+        assert cell is not None, 'Need to supply cell to remove.'
 
-        assert type(cell) is str, 'Cell to remove must be specified by a string.'
+        c = getShortCell(cell)
 
-        c = cell.upper()
-        assert c in knownCells, '{} cell not known.'.format(cell)
+        if c in self.userSpecified:
+            self.userSpecified.remove(c)
 
-        if c in ['ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE', 'ATOM_COORD', 'ATOMIC_COORD',
-              'ATOM_COORDINATE', 'ATOMIC_COORDINATE', 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
-              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES']:
-            self.atoms = []
-            self.numAtoms = 0
-            if 'ATOMS' in self.userSpecified:
-                self.userSpecified.remove('ATOMS')
+        if c == getShortCell('ATOM'):
+            raise NotImplementedError('Removing single atoms currently not implemented.')
+        elif c == getShortCell('ATOMS'):
+            self.atoms = None
+            self.numAtoms = None
 
         # Get defaults of system first.
         self.getDefaults(currentParams)
@@ -82,24 +309,24 @@ class System:
 
     def getDefaults(self, currentParams=None):
         """ This function gets default values for cells based off the current configuration. """
-        pass
 
-    def check(self):
-        """ This function checks that the current system is logical and the model will run. """
-        pass
+        if self.atoms is None or getShortCell('ATOMS') not in self.userSpecified:
+            self.atoms = getDefaultCellValue('ATOMS')
+            self.numAtoms = len(self.atoms)
 
     def getCurrentSystem(self, currentParams=None):
         """ The function returns a dict of system properties that are currently set. """
         dct = dict()
 
         if currentParams is None:
-            dct['Atoms']        = ', '.join([e.element for e in self.atoms])
-            dct['Num of atoms'] = self.numAtoms
+            dct[getNiceCellName('ATOMS')] = getNiceValue('ATOMS', self.atoms)
+            dct[getNiceCellName('NUMATOMS')] = getNiceValue('NUMATOMS', self.numAtoms)
 
+        # !! *** Be careful to ensure the if statements here use the shortParam and shortValue in parameters. *** !! #
         elif currentParams.task == 'SP':
             if self.numAtoms > 0:
-                dct['Atoms']        = ', '.join([e.element for e in self.atoms])
-                dct['Num of atoms'] = self.numAtoms
+                dct[getNiceCellName('ATOMS')] = getNiceValue('ATOMS', self.atoms)
+                dct[getNiceCellName('NUMATOMS')] = getNiceValue('NUMATOMS', self.numAtoms)
 
         return dct
 
@@ -131,5 +358,4 @@ class Atom:
 
     def __str__(self):
         return '{:>4}  {:>9.5f}  {:>9.5f}  {:>9.5f}'.format(self.element, self.x, self.y, self.z)
-
 

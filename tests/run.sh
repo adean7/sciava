@@ -1,11 +1,10 @@
 
-current_dir=`pwd`
+current_dir=$(pwd) ;
 
-cd /Users/adam/Documents/projects/sciava/
+cd /Users/adam/Documents/projects/sciava/ || exit ;
 
-python setup.py install >> /dev/null 2>&1
+python setup.py install >> /dev/null 2>&1 ;
 
-cd $current_dir
+cd "$current_dir" || exit ;
 
-python test.py
-
+python test.py ;

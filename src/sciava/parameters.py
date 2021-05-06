@@ -1,7 +1,8 @@
 from time import time
 
-''' This is just a basic list of allowed parameters. '''
-parametersKnown = ['TASK', 'TASKMETHOD',
+''' This is just the basic list of parameters. '''
+parametersKnown = ['TASK',
+                   'TASKMETHOD',
                    'THEORY', 'XCFUNCTIONAL',
                    'ATOMICSOLVER']
 
@@ -72,15 +73,11 @@ valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
                     }
 
 ''' This dictionary holds the nice presentable names for printing parameter values to screen. '''
-valuesNiceNames = { 'TASK' : { 'SP'          : 'Singlepoint',
-                               'SINGLEPOINT' : 'Singlepoint'
+valuesNiceNames = { 'TASK' : { 'SP' : 'Singlepoint'
                                },
 
-                    'TASKMETHOD' : { 'ATOMISTIC'    : 'Atomistic',
-                                     'HF'           : 'Hartree-Fock',
-                                     'HARTREEFOCK'  : 'Hartree-Fock',
-                                     'HARTREE-FOCK' : 'Hartree-Fock',
-                                     'HARTREE_FOCK' : 'Hartree-Fock'
+                    'TASKMETHOD' : { 'ATOMISTIC' : 'Atomistic',
+                                     'HF'        : 'Hartree-Fock'
                                      },
 
                     'THEORY' : { 'LDA'  : 'LDA',
@@ -88,13 +85,7 @@ valuesNiceNames = { 'TASK' : { 'SP'          : 'Singlepoint',
                                  'BLYP' : 'BLYP'
                                  },
 
-                    'ATOMICSOLVER' : { 'SH'           : 'Schroedinger',
-                                       'SCHRODINGER'  : 'Schroedinger',
-                                       'SCHROEDINGER' : 'Schroedinger',
-                                       'SCHRO'        : 'Schroedinger',
-                                       'SCHROE'       : 'Schroedinger',
-                                       'SCHROD'       : 'Schroedinger',
-                                       'SCHROED'      : 'Schroedinger'
+                    'ATOMICSOLVER' : { 'SH' : 'Schroedinger'
                                        }
                     }
 
@@ -113,21 +104,9 @@ def valueAllowed(parameter, value):
     assert type(parameter) is str, '{} parameter must be specified by a string.'.format(parameter)
 
     param = parameter.upper()
-    val = value.upper()
+    val = value.upper() if type(value) is str else value
 
     return True if parameterAllowed(param) and val in parameterValues.get(param) else False
-
-def getShortValue(parameter, value):
-    assert type(parameter) is str, '{} parameter must be specified by a string.'.format(parameter)
-    assert value is not None, '{} parameter value must be specified.'.format(parameter)
-
-    param = parameter.upper()
-    val = value.upper()
-
-    assert parameterAllowed(param), '{} parameter not known.'.format(parameter)
-    assert valueAllowed(param, val), '{} not an acceptable value for {}'.format(value, parameter)
-
-    return valuesManyToOne.get(param).get(val)
 
 def getShortParam(parameter):
     assert type(parameter) is str, '{} parameter must be specified by a string.'.format(parameter)
@@ -138,7 +117,19 @@ def getShortParam(parameter):
 
     return parametersManyToOne.get(param)
 
-def getDefaultParam(parameter):
+def getShortValue(parameter, value):
+    assert type(parameter) is str, '{} parameter must be specified by a string.'.format(parameter)
+    assert value is not None, '{} parameter value must be specified.'.format(parameter)
+
+    param = parameter.upper()
+    val = value.upper() if type(value) is str else value
+
+    assert parameterAllowed(param), '{} parameter not known.'.format(parameter)
+    assert valueAllowed(param, val), '{} not an acceptable value for {}'.format(value, parameter)
+
+    return valuesManyToOne.get(param).get(val)
+
+def getDefaultParamValue(parameter):
     assert type(parameter) is str, '{} parameter must be specified by a string.'.format(parameter)
 
     param = parameter.upper()
@@ -161,7 +152,7 @@ def getNiceValueName(parameter, value):
     assert value is not None, '{} parameter value must be specified.'.format(parameter)
 
     param = parameter.upper()
-    val = value.upper()
+    val = value.upper() if type(value) is str else value
 
     assert parameterAllowed(param), '{} parameter not known.'.format(parameter)
     assert valueAllowed(param, val), '{} not an acceptable value for {}'.format(value, parameter)
@@ -185,7 +176,6 @@ class Parameters:
         self.userSpecified = []
 
         self.update(currentSystem, **kwargs)
-        self.check()
 
         self.startTime = None
         self.stopTime  = None
@@ -203,16 +193,16 @@ class Parameters:
 
             self.userSpecified.append(param)
 
-            if param == 'TASK':
+            if param == getShortParam('TASK'):
                 self.task = val
 
-            elif param == 'TASKMETHOD':
+            elif param == getShortParam('TASKMETHOD'):
                 self.taskMethod = val
 
-            elif param == 'THEORY':
+            elif param == getShortParam('THEORY'):
                 self.theory = val
 
-            elif param == 'ATOMICSOLVER':
+            elif param == getShortParam('ATOMICSOLVER'):
                 self.atomicSolver = val
 
         # Get defaults of system first.
@@ -230,16 +220,16 @@ class Parameters:
         if param in self.userSpecified:
             self.userSpecified.remove(param)
 
-        if param == 'TASK':
+        if param == getShortParam('TASK'):
             self.task = None
 
-        elif param == 'TASKMETHOD':
+        elif param == getShortParam('TASKMETHOD'):
             self.taskMethod = None
 
-        elif param == 'THEORY':
+        elif param == getShortParam('THEORY'):
             self.theory = None
 
-        elif param == 'ATOMICSOLVER':
+        elif param == getShortParam('ATOMICSOLVER'):
             self.atomicSolver = None
 
         # Get defaults of system first.
@@ -252,7 +242,7 @@ class Parameters:
 
         # If task hasn't been set or if it's set but not by the user then we can get a default.
         if self.task is None or getShortParam('TASK') not in self.userSpecified:
-            self.task = getDefaultParam('TASK')
+            self.task = getDefaultParamValue('TASK')
 
         if self.task == getShortValue('TASK', 'SINGLEPOINT'):
 
@@ -264,30 +254,25 @@ class Parameters:
                     self.taskMethod = getShortValue('TASKMETHOD', 'ATOMISTIC')
 
                 else:   # If no special case then let's just get the usual default for task method.
-                    self.taskMethod = getDefaultParam('TASKMETHOD')
+                    self.taskMethod = getDefaultParamValue('TASKMETHOD')
 
             # If theory hasn't been set or if it's set but not by the user we can give a default.
             if self.theory is None or getShortParam('THEORY') not in self.userSpecified:
 
                 # We only need the DFT theory if we're doing an atomistic calculation, otherwise it's redundant.
                 if self.taskMethod == 'ATOMISTIC':
-                    self.theory = getDefaultParam('THEORY')
+                    self.theory = getDefaultParamValue('THEORY')
 
             # If atomic solver hasn't been set or if it's set but not by the user we can give a default.
             if self.atomicSolver is None or getShortParam('ATOMICSOLVER') not in self.userSpecified:
 
                 # We only need the atomic solver if we're doing an atomistic calculation, otherwise it's redundant.
                 if self.taskMethod == 'ATOMISTIC':
-                    self.atomicSolver = getDefaultParam('ATOMICSOLVER')
-
-    def check(self):
-        """ This function checks that the current parameters of the system are logical and the model will run. """
-        pass
+                    self.atomicSolver = getDefaultParamValue('ATOMICSOLVER')
 
     def getCurrentParams(self, currentSystem=None):
         """ The function returns a dict of parameters that are currently set. """
         dct = dict()
-
 
         dct[getNiceParamName('TASK')] = getNiceValueName('TASK', self.task)
 
