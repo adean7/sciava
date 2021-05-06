@@ -1,12 +1,12 @@
-
 import sciava
-
 
 model = sciava.Model()
 
-model.updateSystem(atomcoord=['He', 1.0, 3.0, 2.0])
-model.updateParams(taskmethod='atomistic', atomicsolver='schrod', xcfunctional='lda')
+flourine = sciava.Atom('F', 1.0, 2.0, 3.0)
+
+model.updateSystem(atomic_coord=flourine)
+model.updateParams(taskmethod='hf', atomicsolver='schrod', xcfunctional='lda')
 
 print(model)
 
-model.run()
+#model.run()

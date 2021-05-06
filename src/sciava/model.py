@@ -19,11 +19,11 @@ class Model:
     def updateSystem(self, **kwargs):
         self.system.update(currentParams=self.params, **kwargs)
 
-    def removeParam(self, parameter):
-        self.params.remove(parameter, currentSystem=self.system)
+    def removeParams(self, *args, **kwargs):
+        self.params.remove(self.system, *args, **kwargs)
 
-    def removeSystem(self, cell):
-        self.system.remove(cell, currentParams=self.params)
+    def removeSystems(self, *args, **kwargs):
+        self.system.remove(args, kwargs, currentParams=self.params)
 
     def check(self):
         """ This function checks that the current model is logical and will run. """

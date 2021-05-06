@@ -1,96 +1,5 @@
 from time import time
 
-''' This is just the basic list of parameters. '''
-parametersKnown = ['TASK',
-                   'TASKMETHOD',
-                   'THEORY', 'XCFUNCTIONAL',
-                   'ATOMICSOLVER']
-
-''' This dictionary takes many parameters and gives the version which is used in the code. '''
-parametersManyToOne = { 'TASK' : 'TASK',
-
-                        'TASKMETHOD' : 'TASKMETHOD',
-
-                        'THEORY'       : 'THEORY',
-                        'XCFUNCTIONAL' : 'THEORY',
-
-                        'ATOMICSOLVER' : 'ATOMICSOLVER'
-                        }
-
-''' This dictionary holds all the possible values for each parameter. '''
-parameterValues = { 'TASK'         : ['SP', 'SINGLEPOINT'],
-                    'TASKMETHOD'   : ['ATOMISTIC', 'HF', 'HARTREE-FOCK', 'HARTREEFOCK', 'HARTREE_FOCK'],
-
-                    'THEORY' : ['LDA', 'PBE', 'BLYP'],
-
-                    'ATOMICSOLVER' : ['SH', 'SCHRODINGER', 'SCHROEDINGER', 'SCHRO', 'SCHROE', 'SCHROD', 'SCHROED']
-                    }
-
-''' This dictionary holds all the default values for parameters. There may be specified configurations that have separate 
-defaults and they are coded manually in the setDefaults function of the Parameters class. '''
-parameterDefaults = { 'TASK'         : 'SP',
-                      'TASKMETHOD'   : 'HF',
-
-                      'THEORY' : 'LDA',
-
-                      'ATOMICSOLVER' : 'SH'
-                      }
-
-''' This dictionary holds the nice presentable names for printing parameters to screen. '''
-parametersNiceNames = { 'TASK'       : 'Task',
-                        'TASKMETHOD' : 'Task method',
-
-                        'THEORY' : 'Theory',
-
-                        'ATOMICSOLVER' : 'Atomic solver'
-                        }
-
-''' This dictionary takes many parameter values and gives the version which is used in the code. '''
-valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
-                               'SINGLEPOINT' : 'SP'
-                               },
-
-                    'TASKMETHOD' : { 'ATOMISTIC'    : 'ATOMISTIC',
-                                     'HF'           : 'HF',
-                                     'HARTREEFOCK'  : 'HF',
-                                     'HARTREE-FOCK' : 'HF',
-                                     'HARTREE_FOCK' : 'HF'
-                                     },
-
-                    'THEORY' : { 'LDA'  : 'LDA',
-                                 'PBE'  : 'PBE',
-                                 'BLYP' : 'BLYP'
-                                 },
-
-                    'ATOMICSOLVER' : { 'SH'           : 'SH',
-                                       'SCHRODINGER'  : 'SH',
-                                       'SCHROEDINGER' : 'SH',
-                                       'SCHRO'        : 'SH',
-                                       'SCHROE'       : 'SH',
-                                       'SCHROD'       : 'SH',
-                                       'SCHROED'      : 'SH'
-                                       }
-                    }
-
-''' This dictionary holds the nice presentable names for printing parameter values to screen. '''
-valuesNiceNames = { 'TASK' : { 'SP' : 'Singlepoint'
-                               },
-
-                    'TASKMETHOD' : { 'ATOMISTIC' : 'Atomistic',
-                                     'HF'        : 'Hartree-Fock'
-                                     },
-
-                    'THEORY' : { 'LDA'  : 'LDA',
-                                 'PBE'  : 'PBE',
-                                 'BLYP' : 'BLYP'
-                                 },
-
-                    'ATOMICSOLVER' : { 'SH' : 'Schroedinger'
-                                       }
-                    }
-
-
-
 
 
 def parameterAllowed(parameter):
@@ -163,6 +72,105 @@ def getNiceValueName(parameter, value):
 
 
 
+''' This is just the basic list of parameters. '''
+parametersKnown = ['TASK',
+                   'TASKMETHOD',
+                   'THEORY', 'XCFUNCTIONAL',
+                   'ATOMICSOLVER']
+
+''' This dictionary takes many parameters and gives the version which is used in the code. '''
+parametersManyToOne = { 'TASK' : 'TASK',
+
+                        'TASKMETHOD' : 'TASKMETHOD',
+
+                        'THEORY'       : 'THEORY',
+                        'XCFUNCTIONAL' : 'THEORY',
+
+                        'ATOMICSOLVER' : 'ATOMICSOLVER'
+                        }
+
+''' This dictionary holds all the possible values for each parameter. '''
+parameterValues = { 'TASK'         : ['SP', 'SINGLEPOINT', 'ENERGY'],
+                    'TASKMETHOD'   : ['ATOMISTIC', 'ATOMIC', 'ATOM',
+                                      'HF', 'HARTREE-FOCK', 'HARTREEFOCK', 'HARTREE_FOCK', 'HARTREE', 'FOCK'],
+
+                    'THEORY' : ['LDA', 'PBE', 'BLYP'],
+
+                    'ATOMICSOLVER' : ['SH', 'SCHRODINGER', 'SCHROEDINGER', 'SCHRO', 'SCHROE', 'SCHROD', 'SCHROED']
+                    }
+
+''' This dictionary holds all the default values for parameters. There may be specified configurations that have separate 
+defaults and they are coded manually in the setDefaults function of the Parameters class. '''
+parameterDefaults = { 'TASK'         : 'SP',
+                      'TASKMETHOD'   : 'HF',
+
+                      'THEORY' : 'LDA',
+
+                      'ATOMICSOLVER' : 'SH'
+                      }
+
+''' This dictionary holds the nice presentable names for printing parameters to screen. '''
+parametersNiceNames = { 'TASK'       : 'Task',
+                        'TASKMETHOD' : 'Task method',
+
+                        'THEORY' : 'Theory',
+
+                        'ATOMICSOLVER' : 'Atomic solver'
+                        }
+
+''' This dictionary takes many parameter values and gives the version which is used in the code. '''
+valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
+                               'SINGLEPOINT' : 'SP',
+                               'ENERGY'      : 'SP'
+                               },
+
+                    'TASKMETHOD' : { 'ATOMISTIC'    : 'ATOMISTIC',
+                                     'ATOMIC'       : 'ATOMISTIC',
+                                     'ATOM'         : 'ATOMISTIC',
+                                     'HF'           : 'HF',
+                                     'HARTREEFOCK'  : 'HF',
+                                     'HARTREE-FOCK' : 'HF',
+                                     'HARTREE_FOCK' : 'HF',
+                                     'HARTREE'      : 'HF',
+                                     'FOCK'         : 'HF'
+                                     },
+
+                    'THEORY' : { 'LDA'  : 'LDA',
+                                 'PBE'  : 'PBE',
+                                 'BLYP' : 'BLYP'
+                                 },
+
+                    'ATOMICSOLVER' : { 'SH'           : 'SH',
+                                       'SCHRODINGER'  : 'SH',
+                                       'SCHROEDINGER' : 'SH',
+                                       'SCHRO'        : 'SH',
+                                       'SCHROE'       : 'SH',
+                                       'SCHROD'       : 'SH',
+                                       'SCHROED'      : 'SH'
+                                       }
+                    }
+
+''' This dictionary holds the nice presentable names for printing parameter values to screen. '''
+valuesNiceNames = { 'TASK' : { 'SP' : 'Singlepoint'
+                               },
+
+                    'TASKMETHOD' : { 'ATOMISTIC' : 'Atomistic',
+                                     'HF'        : 'Hartree-Fock'
+                                     },
+
+                    'THEORY' : { 'LDA'  : 'LDA',
+                                 'PBE'  : 'PBE',
+                                 'BLYP' : 'BLYP'
+                                 },
+
+                    'ATOMICSOLVER' : { 'SH' : 'Schroedinger'
+                                       }
+                    }
+
+
+
+
+
 class Parameters:
     def __init__(self, currentSystem=None, **kwargs):
         self.task       = None
@@ -185,7 +193,7 @@ class Parameters:
 
         for parameter, value in kwargs.items():
             if value is None:
-                self.remove(parameter, currentSystem)
+                self.remove(currentSystem, parameter)
                 continue
 
             param = getShortParam(parameter)
@@ -210,27 +218,33 @@ class Parameters:
             currentSystem.getDefaults(self)
         self.getDefaults(currentSystem)
 
-    def remove(self, parameter=None, currentSystem=None):
-        """ This function removes a single parameter from the configuration. """
+    def remove(self, currentSystem=None, *args, **kwargs):
+        """ This function removes parameter(s) from the configuration. """
 
-        assert parameter is not None, 'Need to supply parameter to remove.'
+        toRemove = {**dict(zip(args, [None] * len(args))), **kwargs}
 
-        param = getShortParam(parameter)
+        assert len(toRemove) > 0 , 'Need to supply parameter(s) to remove.'
 
-        if param in self.userSpecified:
-            self.userSpecified.remove(param)
+        for parameter, value in toRemove.items():
+            param = getShortParam(parameter)
+            val = getShortValue(param, value) if value is not None else value
 
-        if param == getShortParam('TASK'):
-            self.task = None
+            if param == getShortParam('TASK'):
+                self.task, paramRemoved = (None, True) if val in [None, self.task] else (self.task, False)
 
-        elif param == getShortParam('TASKMETHOD'):
-            self.taskMethod = None
+            elif param == getShortParam('TASKMETHOD'):
+                self.taskMethod, paramRemoved = (None, True) if val in [None, self.taskMethod] else (self.taskMethod,
+                                                                                                     False)
 
-        elif param == getShortParam('THEORY'):
-            self.theory = None
+            elif param == getShortParam('THEORY'):
+                self.theory, paramRemoved = (None, True) if val in [None, self.theory] else (self.theory, False)
 
-        elif param == getShortParam('ATOMICSOLVER'):
-            self.atomicSolver = None
+            elif param == getShortParam('ATOMICSOLVER'):
+                self.atomicSolver, paramRemoved = (None, True) if val in [None, self.atomicSolver] else\
+                    (self.atomicSolver, False)
+
+            if paramRemoved and param in self.userSpecified:
+                self.userSpecified.remove(param)
 
         # Get defaults of system first.
         if currentSystem is not None:

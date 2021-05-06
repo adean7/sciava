@@ -17,9 +17,13 @@ def niceAtom(atom):
 
 
 def checkAtoms(atoms):
+    if type(atoms) is not list:
+        return False
+
     for atom in atoms:
         if not checkAtom(atom):
             return False
+
     return True
 
 def getAtoms(atoms):
@@ -43,93 +47,6 @@ def defaultNumAtoms():
 
 def niceNumAtoms(numAtoms):
     return '{:<3d}'.format(numAtoms)
-
-
-
-
-
-''' This is just the basic list of cells. '''
-cellsKnown = ['ATOM', 'ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE',
-              'ATOM_COORD', 'ATOMIC_COORD', 'ATOM_COORDINATE', 'ATOMIC_COORDINATE',
-
-              'ATOMS', 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
-              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES',
-
-              'NUMATOMS', 'NUMBERATOMS', 'NUMOFATOMS', 'NUMBEROFATOMS',
-              'NUM_ATOMS', 'NUMBER_ATOMS', 'NUM_OF_ATOMS', 'NUMBER_OF_ATOMS'
-              ]
-
-''' This dictionary takes many cells and gives the version which is used in the code. '''
-cellsManyToOne = { 'ATOM'               : 'ATOM',
-                   'ATOMCOORD'          : 'ATOM',
-                   'ATOMICCOORD'        : 'ATOM',
-                   'ATOMCOORDINATE'     : 'ATOM',
-                   'ATOMICCOORDINATE'   : 'ATOM',
-                   'ATOM_COORD'         : 'ATOM',
-                   'ATOMIC_COORD'       : 'ATOM',
-                   'ATOM_COORDINATE'    : 'ATOM',
-                   'ATOMIC_COORDINATE'  : 'ATOM',
-
-                   'ATOMS'              : 'ATOMS',
-                   'ATOMCOORDS'         : 'ATOMS',
-                   'ATOMICCOORDS'       : 'ATOMS',
-                   'ATOMCOORDINATES'    : 'ATOMS',
-                   'ATOMICCOORDINATES'  : 'ATOMS',
-                   'ATOM_COORDS'        : 'ATOMS',
-                   'ATOMIC_COORDS'      : 'ATOMS',
-                   'ATOM_COORDINATES'   : 'ATOMS',
-                   'ATOMIC_COORDINATES' : 'ATOMS',
-
-                   'NUMATOMS'        : 'NUMATOMS',
-                   'NUMBERATOMS'     : 'NUMATOMS',
-                   'NUMOFATOMS'      : 'NUMATOMS',
-                   'NUMBEROFATOMS'   : 'NUMATOMS',
-                   'NUM_ATOMS'       : 'NUMATOMS',
-                   'NUMBER_ATOMS'    : 'NUMATOMS',
-                   'NUM_OF_ATOMS'    : 'NUMATOMS',
-                   'NUMBER_OF_ATOMS' : 'NUMATOMS'
-                   }
-
-''' This dictionary holds the functions that check the value of the passed cell. '''
-cellCheckValueFuncs = { 'ATOM'     : checkAtom,
-                        'ATOMS'    : checkAtoms,
-                        'NUMATOMS' : checkNumAtoms
-                        }
-
-''' This dictionary holds the functions that get the value of the passed cell. '''
-cellGetValueFuncs = { 'ATOM'     : getAtom,
-                      'ATOMS'    : getAtoms,
-                      'NUMATOMS' : getNumAtoms
-                      }
-
-''' This dictionary holds the functions that get the default values for cells. '''
-cellGetDefaultFuncs = { 'ATOM'     : defaultAtom,
-                        'ATOMS'    : defaultAtoms,
-                        'NUMATOMS' : defaultNumAtoms
-                        }
-
-''' This dictionary holds the nice presentable names for printing cells to screen. '''
-cellsNiceNames = { 'ATOM'     : 'Atom',
-                   'ATOMS'    : 'Atoms',
-                   'NUMATOMS' : 'Num. atoms'
-                   }
-
-'''
-'''''' This dictionary takes many cell values and gives the version which is used in the code. ''''''
-valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
-                               'SINGLEPOINT' : 'SP'
-                               }
-                    }
-'''
-
-''' This dictionary holds the functions that give the nice presentable forms for printing cell values to screen. '''
-valuesNice = { 'ATOM'     : niceAtom,
-               'ATOMS'    : niceAtoms,
-               'NUMATOMS' : niceNumAtoms,
-               }
-
-
-
 
 
 
@@ -218,20 +135,85 @@ def getNiceValue(cell, value):
 
 
 
+''' This is just the basic list of cells. '''
+cellsKnown = ['ATOM', 'ATOMCOORD', 'ATOMICCOORD', 'ATOMCOORDINATE', 'ATOMICCOORDINATE',
+              'ATOM_COORD', 'ATOMIC_COORD', 'ATOM_COORDINATE', 'ATOMIC_COORDINATE',
 
+              'ATOMS', 'ATOMCOORDS', 'ATOMICCOORDS', 'ATOMCOORDINATES', 'ATOMICCOORDINATES',
+              'ATOM_COORDS', 'ATOMIC_COORDS', 'ATOM_COORDINATES', 'ATOMIC_COORDINATES',
 
+              'NUMATOMS', 'NUMBERATOMS', 'NUMOFATOMS', 'NUMBEROFATOMS',
+              'NUM_ATOMS', 'NUMBER_ATOMS', 'NUM_OF_ATOMS', 'NUMBER_OF_ATOMS'
+              ]
 
+''' This dictionary takes many cells and gives the version which is used in the code. '''
+cellsManyToOne = { 'ATOM'               : 'ATOM',
+                   'ATOMCOORD'          : 'ATOM',
+                   'ATOMICCOORD'        : 'ATOM',
+                   'ATOMCOORDINATE'     : 'ATOM',
+                   'ATOMICCOORDINATE'   : 'ATOM',
+                   'ATOM_COORD'         : 'ATOM',
+                   'ATOMIC_COORD'       : 'ATOM',
+                   'ATOM_COORDINATE'    : 'ATOM',
+                   'ATOMIC_COORDINATE'  : 'ATOM',
 
+                   'ATOMS'              : 'ATOMS',
+                   'ATOMCOORDS'         : 'ATOMS',
+                   'ATOMICCOORDS'       : 'ATOMS',
+                   'ATOMCOORDINATES'    : 'ATOMS',
+                   'ATOMICCOORDINATES'  : 'ATOMS',
+                   'ATOM_COORDS'        : 'ATOMS',
+                   'ATOMIC_COORDS'      : 'ATOMS',
+                   'ATOM_COORDINATES'   : 'ATOMS',
+                   'ATOMIC_COORDINATES' : 'ATOMS',
 
+                   'NUMATOMS'        : 'NUMATOMS',
+                   'NUMBERATOMS'     : 'NUMATOMS',
+                   'NUMOFATOMS'      : 'NUMATOMS',
+                   'NUMBEROFATOMS'   : 'NUMATOMS',
+                   'NUM_ATOMS'       : 'NUMATOMS',
+                   'NUMBER_ATOMS'    : 'NUMATOMS',
+                   'NUM_OF_ATOMS'    : 'NUMATOMS',
+                   'NUMBER_OF_ATOMS' : 'NUMATOMS'
+                   }
 
+''' This dictionary holds the functions that check the value of the passed cell. '''
+cellCheckValueFuncs = { 'ATOM'     : checkAtom,
+                        'ATOMS'    : checkAtoms,
+                        'NUMATOMS' : checkNumAtoms
+                        }
 
+''' This dictionary holds the functions that get the value of the passed cell. '''
+cellGetValueFuncs = { 'ATOM'     : getAtom,
+                      'ATOMS'    : getAtoms,
+                      'NUMATOMS' : getNumAtoms
+                      }
 
+''' This dictionary holds the functions that get the default values for cells. '''
+cellGetDefaultFuncs = { 'ATOM'     : defaultAtom,
+                        'ATOMS'    : defaultAtoms,
+                        'NUMATOMS' : defaultNumAtoms
+                        }
 
+''' This dictionary holds the nice presentable names for printing cells to screen. '''
+cellsNiceNames = { 'ATOM'     : 'Atom',
+                   'ATOMS'    : 'Atoms',
+                   'NUMATOMS' : 'Num. atoms'
+                   }
 
+'''
+'''''' This dictionary takes many cell values and gives the version which is used in the code. ''''''
+valuesManyToOne = { 'TASK' : { 'SP'          : 'SP',
+                               'SINGLEPOINT' : 'SP'
+                               }
+                    }
+'''
 
-
-
-
+''' This dictionary holds the functions that give the nice presentable forms for printing cell values to screen. '''
+valuesNice = { 'ATOM'     : niceAtom,
+               'ATOMS'    : niceAtoms,
+               'NUMATOMS' : niceNumAtoms,
+               }
 
 
 
